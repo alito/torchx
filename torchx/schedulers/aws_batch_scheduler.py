@@ -176,6 +176,14 @@ def _role_to_node_properties(
     mount_points = []
     volumes = []
     devices = []
+
+    for i in range(8):
+        devices.append(
+            {
+                "hostPath": f"/dev/infiniband/uverbs{i}",
+                "permissions": []
+            }
+        )
     for i, mount in enumerate(role.mounts):
         name = f"mount_{i}"
         if isinstance(mount, BindMount):
@@ -243,6 +251,20 @@ def _role_to_node_properties(
         },
         "mountPoints": mount_points,
         "volumes": volumes,
+        "ulimits": [
+            {
+                "hardLimit": -1,
+                "name": "memlock",
+                "softLimit": -1
+            },
+            {
+                "hardLimit": 65535,
+                "name": "nofile",
+                "softLimit": 65535
+            }
+        ],
+        "instanceType": "trn1.32xlarge",
+
     }
 
     return {
